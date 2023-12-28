@@ -121,7 +121,7 @@ public class ChessMatch {
 		if(promoted == null){
 			throw new IllegalStateException("Nao existe peca para ser promovida");
 		}
-		if(!type.equals("B") && !type.equals("H") && !type.equals("R") && !type.equals("Q")){
+		if((!type.equals("B") || !type.equals("b")) && (!type.equals("H") || !type.equals("h")) && (!type.equals("R") || !type.equals("r")) && (!type.equals("Q") || !type.equals("q"))){
 			throw new InvalidParameterException("Tipo invalido de promocao");
 		}
 		
@@ -137,9 +137,9 @@ public class ChessMatch {
 	}
 	
 	private ChessPiece newPiece(String type, Color color){
-		if(type.equals("B")) return new Bishop(board, color);
-		if(type.equals("H")) return new Horse(board, color);
-		if(type.equals("R")) return new Rook(board, color);
+		if(type.equals("B") || type.equals("b")) return new Bishop(board, color);
+		if(type.equals("H") || type.equals("h")) return new Horse(board, color);
+		if(type.equals("R") || type.equals("r")) return new Rook(board, color);
 		return new Queen(board, color);
 	}
 	
