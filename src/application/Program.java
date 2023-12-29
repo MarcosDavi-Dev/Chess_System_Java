@@ -5,6 +5,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
+import boardgame.BoardException;
 import chess.ChessException;
 import chess.ChessMatch;
 import chess.ChessPiece;
@@ -19,7 +20,7 @@ public class Program {
 		List<ChessPiece> captured = new ArrayList<>();
 		
 		
-		while(!chessMatch.getCheckMate()){
+		while(!chessMatch.getCheckMate() && !chessMatch.getDraw()){
 			try {
 				UI.clearScreen();
 				UI.printMatch(chessMatch, captured);
@@ -58,6 +59,10 @@ public class Program {
 			catch (InputMismatchException e) {
 				System.out.println(e.getMessage());
 				sc.nextLine();
+			}
+			catch (BoardException e){
+				System.out.println("Jogo empatado.");
+				System.exit(1);
 			}
 		}
 		UI.clearScreen();

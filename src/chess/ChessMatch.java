@@ -19,6 +19,7 @@ public class ChessMatch {
 	private int turn;
 	private Color currentPlayer;
 	private Board board;
+	private boolean draw;
 	private boolean check;
 	private boolean checkMate;
 	private ChessPiece enPassantVulnerable;
@@ -40,6 +41,10 @@ public class ChessMatch {
 	
 	public Color getCurrentPlayer(){
 		return currentPlayer;
+	}
+	
+	public boolean getDraw(){
+		return draw;
 	}
 	
 	public boolean getCheck(){
@@ -84,7 +89,11 @@ public class ChessMatch {
 		if(testCheck(currentPlayer)){
 			undoMove(source, target, capturedPiece);
 				throw new ChessException("Voce nao pode se colocar em Check");
-		}
+		} 
+		
+		if (!check && testDraw(currentPlayer)) {
+	        throw new ChessException("Jogo empatado.");
+	    }
 		
 		ChessPiece movedPiece = (ChessPiece)board.piece(target);
 		
@@ -284,6 +293,34 @@ public class ChessMatch {
 		return false;
 	}
 	
+	private boolean testDraw(Color color) {
+	    if (!testCheck(color) && !testCheckMate(color)) {
+	        List<Piece> playerPieces = piecesOnTheBoard.stream()
+	                .filter(x -> ((ChessPiece) x).getColor() == color)
+	                .collect(Collectors.toList());
+
+	        for (Piece p : playerPieces) {
+	            boolean[][] mat = p.possibleMoves();
+	            for (int i = 0; i < board.getRows(); i++) {
+	                for (int j = 0; j < board.getColumns(); j++) {
+	                    if (mat[i][j]) {
+	                        Position source = ((ChessPiece) p).getChessPosition().toPosition();
+	                        Position target = new Position(i, j);
+	                        Piece capturedPiece = makeMove(source, target);
+	                        boolean testCheck = testCheck(color);
+	                        undoMove(source, target, capturedPiece);
+	                        if (!testCheck) {
+	                            return false;
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	        return true; // Empate por afogamento
+	    }
+	    return false;
+	}
+	
 	private boolean testCheckMate(Color color){
 		if(!testCheck(color)){
 			return false;
@@ -308,6 +345,7 @@ public class ChessMatch {
 		}
 		return true;
 	}
+
 	
 	private void placeNewPiece(char column, int row, ChessPiece piece){
 		board.placePiece(piece, new ChessPosition(column, row).toPosition());
@@ -348,6 +386,7 @@ public class ChessMatch {
         placeNewPiece('f', 7, new Pawn(board, Color.BLACK, this));
         placeNewPiece('g', 7, new Pawn(board, Color.BLACK, this));
         placeNewPiece('h', 7, new Pawn(board, Color.BLACK, this));
+		
 	}
 	
 }
